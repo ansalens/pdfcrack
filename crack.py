@@ -3,6 +3,11 @@ import PyPDF2 as pdf
 from time import sleep
 from sys import exit
 
+"""
+TO-DO:
+    1. Implement AES automatic decryption
+"""
+
 
 def parse_file(file):
     source_dir = os.path.dirname(__file__)
@@ -41,18 +46,17 @@ def crackpdf(wordlist, pdf_file):
         if pdf_file.decrypt(password) == 0:
             print('Trying: ' + password)
 
-        elif pdf_file.decrypt(password) == 1:
+        elif pdf_file.decrypt(password) == 2:
             print('\n[!] FOUND: ' + password)
             autoDecryption = input('Decrypt the file? [Y/N]: ').lower()
 
             if autoDecryption == 'y' or autoDecryption == 'yes':
-                decrypted = open(os.path.join(os.path.expanduser('~'), 'decrypted.pdf'), 'wb')
+                for page in pdf_file.pages:
+                    pdfWriter.add_page(page)
 
-                for pages in range(pdf_file.numPages):
-                    pdfWriter.addPage(pdf_file.getPage(pages))
-                    pdfWriter.write(decrypted)
+                with open("decrypted.pdf", "wb") as f:
+                    decrypted.write(f)
 
-                decrypted.close()
                 print('[*] File decrypted successfully and saved as ~/decrypted.pdf')
                 exit()
 
