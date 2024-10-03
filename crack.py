@@ -5,7 +5,6 @@ from sys import exit
 
 """
 TO-DO:
-    1. Implement AES automatic decryption
 """
 
 
@@ -38,16 +37,17 @@ def parse_file(file):
         exit(1)
 
 def crackpdf(wordlist, pdf_file): 
-    print('\n|*| Initializing dictionary attack')
+    print('|*| Initializing dictionary attack')
 
     pdfWriter = pdf.PdfWriter()
 
     for password in wordlist.read().split():
-        if pdf_file.decrypt(password) == 0:
-            print('Trying: ' + password)
+        #if pdf_file.decrypt(password) == 0:
+            #print('Trying: ' + password)
 
-        elif pdf_file.decrypt(password) == 2:
-            print('\n[!] FOUND: ' + password)
+        # Found correct password
+        if pdf_file.decrypt(password) == 2:
+            print('* * * * * * * * *\n[!] FOUND PASSWORD: ' + password)
             autoDecryption = input('Decrypt the file? [Y/N]: ').lower()
 
             if autoDecryption == 'y' or autoDecryption == 'yes':
@@ -55,9 +55,9 @@ def crackpdf(wordlist, pdf_file):
                     pdfWriter.add_page(page)
 
                 with open("decrypted.pdf", "wb") as f:
-                    decrypted.write(f)
+                    pdfWriter.write(f)
 
-                print('[*] File decrypted successfully and saved as ~/decrypted.pdf')
+                print('[*] File decrypted successfully and saved as decrypted.pdf')
                 exit()
 
             elif autoDecryption == 'n' or autoDecryption == 'no':
@@ -66,16 +66,16 @@ def crackpdf(wordlist, pdf_file):
 
     if pdf_file.is_encrypted:
         wordlist.close()
-        print('\n[!] Password not found')
+        print('\n[!] Password not found in wordlist')
         exit()
 
 
 
 def main():
-    input_pass = input('Path to a wordlist: ')
+    input_pass = input('Enter path to wordlist: ')
     pass_txt = parse_file(input_pass)
 
-    path_to_pdf = input('Path to the PDF: ')
+    path_to_pdf = input('Enter path to encrypted PDF: ')
     pdf_file = parse_file(path_to_pdf)
 
     crackpdf(pass_txt, pdf_file)
